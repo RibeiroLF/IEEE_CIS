@@ -4,7 +4,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.impute import SimpleImputer
 
 
-dados = pd.read_excel('C:/Users/desktop/Documents/Docs/IEE DESAFIO/Titanic.xlsx')
+dados = pd.read_excel('C:\\Users\\desktop\\PycharmProjects\\IEEE_CIS\\Titanic.xlsx')
 dados = dados.dropna(axis=1, how='all')
 
 idades_filtradas = dados.dropna(subset=['Age']).copy()
