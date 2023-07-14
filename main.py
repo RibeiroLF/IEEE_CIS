@@ -4,9 +4,12 @@ from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
 #pandas: Foi utilizado para trabalhar com a estrutura de dados DataFrame, ler dados de arquivos Excel e manipular os dados
 #matplotlib.pyplot: Usado para criar visualizações gráficas
 #sklearn.linear_model.LinearRegression: Foi utilizado para criar um modelo de regressão linear
+#sklearn.linear_model.LogisticRegression: Utilizado para criar um modelo de regressão logística
 #sklearn.linear_model.LogisticRegression: Utilizado para criar um modelo de regressão logística
 #sklearn.impute.SimpleImputer: Usado para preencher valores ausentes (NaN) em um conjunto de dados
 #sklearn.model_selection.train_test_split: Foi utilizado para dividir o conjunto de dados em conjunto de treinamento e conjunto de teste
@@ -15,6 +18,8 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 #sklearn.metrics.recall_score: Uso no cálculo do recall do modelo
 #sklearn.metrics.f1_score: Foi usado para calcular a pontuação F1 do modelo
 #sklearn.metrics.confusion_matrix: Utilizado para calcular a matriz de confusão do modelo
+#sklearn.decomposition para implantação do PCA
+#sklearn.cluster para implementar o cluster
 
 #Leitura dos dados a partir do arquivo Excel e remoção de colunas vazias
 dados = pd.read_excel('C:\\Users\\desktop\\PycharmProjects\\IEEE_CIS\\Titanic.xlsx')
@@ -39,6 +44,31 @@ X = idades_filtradas[['Age_imputed']]
 y = idades_filtradas['Survived']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+#Aplicando o PCA
+pca = PCA(n_components=1)
+X_pca = pca.fit_transform(X_train)
+
+#Visualizando os gráficos do PCA
+plt.scatter(X_pca[:, 0], [0] * len(X_pca), c=y_train, cmap='viridis')  # Usando [0] para o eixo y para plotar em uma dimensão
+plt.xlabel('Componente Principal 1')
+plt.title('PCA: Redução de dimensionalidade')
+plt.show()
+
+#Aplicando o Cluster
+kmeans = KMeans(n_clusters=2)
+kmeans.fit(X_train)
+
+#Obtendo as previsões
+y_pred_kmeans = kmeans.predict(X_test)
+
+#Visualização os resultados do cluster
+plt.scatter(X_test.values[:, 0], [0] * len(X_test), c=y_pred_kmeans, cmap='viridis')
+plt.scatter(kmeans.cluster_centers_[:, 0], [0] * len(kmeans.cluster_centers_[:, 0]), marker='x', color='red')
+plt.xlabel('Idade')
+plt.ylabel('Sobrevivência')
+plt.title('Clustering: K-means')
+plt.show()
+
 #Criação e treinamento do modelo de regressão logística utilizando o conjunto de treinamento
 #É feita a previsão das classes para o conjunto de teste
 regressor = LogisticRegression()
@@ -58,7 +88,7 @@ print(f"F1-score: {f1:.2f}")
 print("Matriz de Confusão: ")
 print(confusion_mat)
 
-# Visualizações dos gráficos
+#Visualizações dos gráficos
 plt.hist(idades_filtradas['Age_imputed'], bins=10, edgecolor='blue')
 plt.xlabel('Idade')
 plt.ylabel('Frequência')
