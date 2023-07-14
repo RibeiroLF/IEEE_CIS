@@ -1,17 +1,43 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.impute import SimpleImputer
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
 
 dados = pd.read_excel('C:\\Users\\desktop\\PycharmProjects\\IEEE_CIS\\Titanic.xlsx')
 dados = dados.dropna(axis=1, how='all')
+
+if 'Age' not in dados.columns or 'Survived' not in dados.columns:
+    print("Os dados não foram filtrados corretamente. Certifique-se de que as colunas 'Age' e 'Survived' existam.")
+    exit()
 
 idades_filtradas = dados.dropna(subset=['Age']).copy()
 imputer = SimpleImputer(strategy='mean')
 dados_preenchidos = imputer.fit_transform(idades_filtradas[['Age']])
 
 idades_filtradas.loc[:, 'Age_imputed'] = dados_preenchidos
+
+X = idades_filtradas[['Age_imputed']]
+y = idades_filtradas['Survived']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+regressor = LogisticRegression()
+regressor.fit(X_train, y_train)
+y_pred = regressor.predict(X_test)
+
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+confusion_mat = confusion_matrix(y_test, y_pred)
+
+print(f"Acurácia: {accuracy:.2f}")
+print(f"Precisão: {precision:.2f}")
+print(f"Recall: {recall:.2f}")
+print(f"F1-score: {f1:.2f}")
+print("Matriz de Confusão: ")
+print(confusion_mat)
 
 plt.hist(idades_filtradas['Age_imputed'], bins=10, edgecolor='blue')
 plt.xlabel('Idade')
